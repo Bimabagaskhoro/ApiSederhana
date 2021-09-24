@@ -4,38 +4,43 @@ require_once "koneksi.php";
         $_GET['function']();
     }
 
-    function insert_buah(){
-        global $connect;   
-        $check = array(
-           'id' => '', 
-           'nama' => '', 
-           'harga' => ''
-         );
-        $check_match = count(array_intersect_key($_POST, $check));
-        if($check_match == count($check)){
-            $query = "INSERT INTO buah SET
-               id = '$_POST[id]',
-               nama = '$_POST[nama]',
-               harga = '$_POST[harga]'";
-               
-            $result = mysqli_query($query, $connect);
-
-            if($result){
+    function insert_buah()
+    {
+       global $connect;   
+       $check = array(
+          'id' => '', 
+          'nama' => '', 
+          'harga' => '');
+       $check_match = count(array_intersect_key($_POST, $check));
+       if($check_match == count($check)){
+       
+             $result = mysqli_query($connect, "INSERT INTO buah SET
+             id = '$_POST[id]',
+             nama = '$_POST[nama]',
+             harga = '$_POST[harga]'");
+             
+             if($result)
+             {
                 $response=array(
-                'status' => 1,
-                'message' =>'Insert Success');
-            }else{
+                   'status' => 1,
+                   'message' =>'Insert Success'
+                );
+             }
+             else
+             {
                 $response=array(
-                'status' => 0,
-                'message' =>'Insert Failed.');
-            }
-        }else{
-                $response=array(
-                'status' => 0,
-                'message' =>'Wrong Parameter');
-                }
-        header('Content-Type: application/json');
-        echo json_encode($response);       
+                   'status' => 0,
+                   'message' =>'Insert Failed.'
+                );
+             }
+       }else{
+          $response=array(
+                   'status' => 0,
+                   'message' =>'Wrong Parameter'
+                );
+       }
+       header('Content-Type: application/json');
+       echo json_encode($response);
     }
 
     function update_buah(){
@@ -49,10 +54,9 @@ require_once "koneksi.php";
 
        $check_match = count(array_intersect_key($_POST, $check));         
        if($check_match == count($check)){
-            $query = "UPDATE buah SET               
-             nama = '$_POST[nama]',
-             harga = '$_POST[harga]' WHERE id = $id";
-            $result = mysqli_query($query, $connect);
+         $result = mysqli_query($connect, "UPDATE buah SET               
+         nama = '$_POST[nama]',
+         harga = '$_POST[harga]' WHERE id = $id");
        
           if($result){
              $response=array(
