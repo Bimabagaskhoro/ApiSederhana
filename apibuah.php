@@ -243,7 +243,6 @@ require_once "koneksi.php";
    $id = $_GET["id"];      
    }   
    $check = array(
-      'id' => '', 
       'email' => '', 
       'nama' => '',
       'passwd' => '', 
@@ -251,13 +250,12 @@ require_once "koneksi.php";
 
    $check_match = count(array_intersect_key($_POST, $check));         
    if($check_match == count($check)){
-     $result = mysqli_query($connect, "UPDATE person SET 
-      id = '$_POST[id]',             
+     $result = mysqli_query($connect, "UPDATE person SET              
       email = '$_POST[email]',
       nama = '$_POST[nama]',
       passwd = '$_POST[passwd]',
       gambar = '$_POST[gambar]'
-      WHERE id = $id");
+     WHERE id = $id");
    
       if($result){
          $response=array(
@@ -295,7 +293,7 @@ function delete_person(){
    {
       $response=array(
          'status' => 0,
-         'message' =>'Delete Fail.'
+         'message' =>'Delete Failed.'
       );
    }
    header('Content-Type: application/json');
@@ -316,11 +314,11 @@ function delete_person(){
 
   if (!$gambar) {
       $response["status"] = 0;
-      $response["message"] = "Gambar tidak ditemukan";
+      $response["message"] = "Upload Failed";
   } else {
       if (move_uploaded_file($gambar, $filePath.'/'.$gambarName)) {
           $response["statue"] = 1;
-          $response["message"] = "Sukses upload gambar";
+          $response["message"] = "Upload Successr";
       }
   }
 
