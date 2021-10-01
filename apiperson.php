@@ -153,6 +153,38 @@ require_once "koneksi.php";
    header('Content-Type: application/json');
    echo json_encode($response);
   }
-  
 
+  function upload_gambar(){
+   $image = $_FILES['file']['tmp_name'];
+   $imagename = $_FILES['file']['name'];
+   $file_path = "uploadgambar";
+   
+   $response = array();
+   
+   if (!file_exists($file_path)) {
+       mkdir($file_path, 0777, true);
+   }
+   
+   if(!$image){
+       $response=array(
+           'status' => 0,
+           'message' =>'Gambar Tidak Ditemukan'
+       );;
+   }
+   else{
+       if(move_uploaded_file($image, $file_path.'/'.$imagename)){
+           $response=array(
+               'status' => 1,
+               'message' =>'Insert Success'
+           );
+       }else {
+         $response = array(
+             'status' => 0,
+             'message' => 'Success Gagal'
+         );
+   }
+   header('Content-Type: application/json');
+   echo json_encode($response);
+   }
+}
 ?>
