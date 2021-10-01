@@ -63,7 +63,8 @@ require_once "koneksi.php";
            header('Content-Type: application/json');
            echo json_encode($response);
         }
-           function update_user(){
+        
+        function update_user(){
             global $connect;
             if (!empty($_GET["id"])) {
             $id = $_GET["id"];      
@@ -103,6 +104,36 @@ require_once "koneksi.php";
             header('Content-Type: application/json');
             echo json_encode($response);
            }
+
+           function login_user()
+           {
+            global $connect;
+            if (!empty($_GET["email"]) && !empty($_GET["passwd"])) {
+                $email = $_GET["email"];  
+                $passwd = $_GET["passwd"];  
+            }
+
+            $query = "SELECT * FROM user WHERE 
+            email = '$email' AND 
+            passwd = '$passwd'";
+            $result = $connect->query($query);
+            if ($result->num_rows > 0) {
+                while ($row = mysqli_fetch_object($result)) {
+                    $data[] = $row;
+                }
+                $response = array(
+                    'status' => 1,
+                    'message' => 'get data succeed',
+                    'data' => $data);
+                }else{
+                $response = array(
+                    'status' => 0,
+                    'message' => 'no data found'
+                );
+            }
+            header('Content-Type: application/json');
+            echo json_encode($response);
+            }
 
            function upload_avatar(){
             $image = $_FILES['file']['tmp_name'];
