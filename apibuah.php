@@ -146,141 +146,35 @@ require_once "koneksi.php";
         echo json_encode($response);
     }
 
+     // send notif
+     function send_notification() {
 
-
-
-    //assss
-    function get_user(){
-      global $connect;
-      $query = $connect -> query("SELECT * FROM user");
-      while($row=mysqli_fetch_object($query))
-      {
-          $data[] =$row;
+      $check      = array('title' => '', 'message' => '');
+      $checkMatch = count(array_intersect_key($_POST, $check));
+  
+      if ($checkMatch == count($check)) {
+  
+          $title   = $_POST['title'];
+          $message = $_POST['message'];
+          
+          $dataEntity = new Data();
+          $firebase   = new Notification();
+  
+          $dataEntity->setTitle($title);
+          $dataEntity->setMessage($message);
+  
+          $sendNotif = $firebase->sendToTopic('formulir-app-commonly', $dataEntity->getData());
+  
+          if ($sendNotif == TRUE) {
+              $response["status"] = 1;
+              $response["message"] = "Notification berhasil";
+          } 
+      } else {
+          $response["status"] = 0;
+          $response["message"] = "Parameter tidak sesuai";
       }
-      $response=array(
-          'status' => 1,
-          'message' =>'Success',
-          'data' => $data
-       );
-      header('Content-Type: application/json');
+  
       echo json_encode($response);
-  }
-
-  function insert_user(){
-      global $connect;   
-      $check = array(
-         'id' => '', 
-         'nama' => '', 
-         'email' => '',
-         'pass' => '',
-         'avatar' => '');
-         $check_match = count(array_intersect_key($_POST, $check));
-         if($check_match == count($check)){
-         
-               $result = mysqli_query($connect, "INSERT INTO user SET
-               id = '$_POST[id]',
-               nama = '$_POST[nama]',
-               email = '$_POST[email]',
-               pass = '$_POST[password]',
-               avatar = '$_POST[avatar]'
-               ");
-               
-               if($result)
-               {
-                  $response=array(
-                     'status' => 1,
-                     'message' =>'Insert Success'
-                  );
-               }
-               else
-               {
-                  $response=array(
-                     'status' => 0,
-                     'message' =>'Insert Failed.'
-                  );
-               }
-         }else{
-            $response=array(
-                     'status' => 0,
-                     'message' =>'Wrong Parameter'
-                  );
-         }
       
-         header('Content-Type: application/json');
-         echo json_encode($response);
-      }
-         function update_user(){
-          global $connect;
-          if (!empty($_GET["id"])) {
-          $id = $_GET["id"];      
-          }   
-          $check = array(
-             'nama' => '',
-             'email' => '', 
-             'password' => '',
-             'avatar' => '' );
-         
-          $check_match = count(array_intersect_key($_POST, $check));         
-          if($check_match == count($check)){
-            $result = mysqli_query($connect, "UPDATE persons SET   
-                     nama = '$_POST[nama]',           
-                     email = '$_POST[email]',
-                     password = '$_POST[password]',
-                     avatar = '$_POST[avatar]'
-            WHERE id = $id");
-          
-             if($result){
-                $response=array(
-                   'status' => 1,
-                   'message' =>'Update Success');
-             }
-             else
-             {
-                $response=array(
-                   'status' => 0,
-                   'message' =>'Update Failed');
-             }
-          }else{
-             $response=array(
-                      'status' => 0,
-                      'message' =>'Wrong Parameter',
-                      'data'=> $id);
-          }
-          header('Content-Type: application/json');
-          echo json_encode($response);
-         }
-
-         function upload_avatar(){
-          $image = $_FILES['file']['tmp_name'];
-          $imagename = $_FILES['file']['name'];
-          $file_path = "uploadgambar";
-          
-          $response = array();
-          
-          if (!file_exists($file_path)) {
-              mkdir($file_path, 0777, true);
-          }
-          
-          if(!$image){
-              $response=array(
-                  'status' => 0,
-                  'message' =>'Gambar Tidak Ditemukan'
-              );;
-          }
-          else{
-              if(move_uploaded_file($image, $file_path.'/'.$imagename)){
-                  $response=array(
-                      'status' => 1,
-                      'message' =>'Insert Success'
-                  );
-              }else {
-                $response = array(
-                    'status' => 0,
-                    'message' => 'Success Gagal'
-                );
-          }
-          header('Content-Type: application/json');
-          echo json_encode($response);
-          }
-   }
+    
 ?>
