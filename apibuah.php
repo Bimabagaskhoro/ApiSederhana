@@ -144,37 +144,5 @@ require_once "koneksi.php";
         }
         header('Content-Type: application/json');
         echo json_encode($response);
-    }
-
-     // send notif
-     function send_notification() {
-
-      $check      = array('title' => '', 'message' => '');
-      $checkMatch = count(array_intersect_key($_POST, $check));
-  
-      if ($checkMatch == count($check)) {
-  
-          $title   = $_POST['title'];
-          $message = $_POST['message'];
-          
-          $dataEntity = new Data();
-          $firebase   = new Notification();
-  
-          $dataEntity->setTitle($title);
-          $dataEntity->setMessage($message);
-  
-          $sendNotif = $firebase->sendToTopic('formulir-app-commonly', $dataEntity->getData());
-  
-          if ($sendNotif == TRUE) {
-              $response["status"] = 1;
-              $response["message"] = "Notification berhasil";
-          } 
-      } else {
-          $response["status"] = 0;
-          $response["message"] = "Parameter tidak sesuai";
-      }
-  
-      echo json_encode($response);
-      
-    
+    } 
 ?>
