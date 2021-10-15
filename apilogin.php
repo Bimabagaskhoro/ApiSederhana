@@ -73,7 +73,8 @@ require_once "koneksi.php";
                'nama' => '',
                'email' => '', 
                'passwd' => '',
-               'avatar' => '' );
+               'avatar' => '',
+            );
            
             $check_match = count(array_intersect_key($_POST, $check));         
             if($check_match == count($check)){
@@ -135,39 +136,45 @@ require_once "koneksi.php";
             echo json_encode($response);
             }
 
-           function upload_avatar(){
-            $image = $_FILES['file']['tmp_name'];
-            $imagename = $_FILES['file']['name'];
-            $file_path = "uploadgambar";
+            function login_auth() {
+                global $connect;
             
-            $response = array();
+                $deviceId = $_POST['id_device'] ?: '';
+                
+                if ($deviceId != null && !$deviceId->empty) {
+                    $query = mysqli_query($connect, "SELECT * FROM user WHERE id_device = '$deviceId'");
+                    $row   = mysqli_num_rows($query);
+                    if ($row > 0) {
+                        $response["status"] = 1;
+                        $response["message"] = "Login sukses";
+                        $response["data"] = mysqli_fetch_object($query);
+                    } else {
+                        $response["status"] = 0;
+                        $response["message"] = "Login gagal";
+                    }
+                } 
             
-            if (!file_exists($file_path)) {
-                mkdir($file_path, 0777, true);
+                echo json_encode($response);
             }
             
-            if(!$image){
-                $response=array(
-                    'status' => 0,
-                    'message' =>'Gambar Tidak Ditemukan'
-                );;
+            function update_id_device() {
+                global $connect;
+            
+                $deviceId = $_POST['id_device'] ?: '';
+                $id = $_POST['id'] ?: '';
+            
+                if (!$deviceId->empty && !$id->empty) {
+                    $query = mysqli_query($connect, "UPDATE user SET id_device = '$deviceId' WHERE id = $id");
+                    if ($query) {
+                        $response["status"] = 1;
+                        $response["message"] = "update device id berhasil";
+                    } else {
+                        $response["status"] = 0;
+                        $response["message"] = "gagal update device id";
+                    }
+                }
+            
+                echo json_encode($response);
             }
-            else{
-                if(move_uploaded_file($image, $file_path.'/'.$imagename)){
-                    $response=array(
-                        'status' => 1,
-                        'message' =>'Insert Success'
-                    );
-                }else {
-                  $response = array(
-                      'status' => 0,
-                      'message' => 'Success Gagal'
-                  );
-            }
-            header('Content-Type: application/json');
-            echo json_encode($response);
-            }
-     }
-
-
+            
 ?>

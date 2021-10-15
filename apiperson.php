@@ -186,43 +186,6 @@ require_once "koneksi.php";
    header('Content-Type: application/json');
    echo json_encode($response);
    }
-}
+   }
 
-function sendPushNotification($fcm_token, $title, $message, $id = null,$action = null) {  
-     
-   $url = "https://fcm.googleapis.com/fcm/send";            
-   $header = [
-       'authorization: key=AAAACHe-Jvc:APA91bFNoQIepsVu1Dy7MGEZW3jT9XYmgHlp4Ya5iiPgb8oMnI-zbEa1XM08KbzVHfqEYJ5gPdeEl7La--JQr9wS4MjYfvzX5HxeBQyECGdbxB5Phxai9UjXri_Z9Fi-fDzgKw7UvKfS',
-       'content-type: application/json'
-   ];    
-
-   $notification = array (
-       'title' =>  $title,
-       'body' =>   $message
-   );
-
-   //$extraNotificationData = ["message" => $notification,"id" =>$id,'action'=>$action];
-
-   $fcmNotification = [
-
-       'registration_ids'  => [$fcm_token],
-       'notification'      => $notification
-       // 'to'        => $fcm_token,
-       // 'notification' => $notification,
-       // 'data' => $extraNotificationData
-   ];
-
-   $ch = curl_init();
-   curl_setopt($ch, CURLOPT_URL, $url);
-   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60);
-   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-   curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmNotification));
-   curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-
-   $result = curl_exec($ch);    
-   curl_close($ch);
-
-   return $result;
-}
 ?>
