@@ -27,7 +27,8 @@ require_once "koneksi.php";
            'nama' => '', 
            'email' => '',
            'passwd' => '',
-           'avatar' => '');
+           'avatar' => '',
+           'id_device' => '');
            $check_match = count(array_intersect_key($_POST, $check));
            if($check_match == count($check)){
            
@@ -36,7 +37,8 @@ require_once "koneksi.php";
                  nama = '$_POST[nama]',
                  email = '$_POST[email]',
                  passwd = '$_POST[passwd]',
-                 avatar = '$_POST[avatar]'
+                 avatar = '$_POST[avatar]',
+                 id_device = '$_POST[id_device]'
                  ");
                  
                  if($result)
@@ -74,6 +76,7 @@ require_once "koneksi.php";
                'email' => '', 
                'passwd' => '',
                'avatar' => '',
+               'id_device' => ''
             );
            
             $check_match = count(array_intersect_key($_POST, $check));         
@@ -82,7 +85,8 @@ require_once "koneksi.php";
                        nama = '$_POST[nama]',           
                        email = '$_POST[email]',
                        passwd = '$_POST[passwd]',
-                       avatar = '$_POST[avatar]'
+                       avatar = '$_POST[avatar]',
+                       id_device = '$_POST[id_device]'
               WHERE id = $id");
             
                if($result){
@@ -136,45 +140,75 @@ require_once "koneksi.php";
             echo json_encode($response);
             }
 
-            function login_auth() {
+            function login_auth_id_device() 
+            {
                 global $connect;
-            
-                $deviceId = $_POST['id_device'] ?: '';
-                
-                if ($deviceId != null && !$deviceId->empty) {
-                    $query = mysqli_query($connect, "SELECT * FROM user WHERE id_device = '$deviceId'");
-                    $row   = mysqli_num_rows($query);
-                    if ($row > 0) {
-                        $response["status"] = 1;
-                        $response["message"] = "Login sukses";
-                        $response["data"] = mysqli_fetch_object($query);
-                    } else {
-                        $response["status"] = 0;
-                        $response["message"] = "Login gagal";
-                    }
-                } 
-            
+
+                $id_device = $_POST['id_device'];
+                $query = mysqli_query($connect, "SELECT * FROM user WHERE 
+                id_device= '$id_device'");
+                $result = array();
+
+                while ($row = $query->fetch_assoc()) {
+                    array_push($result, array(
+                        'id' => $row['id'],
+                        'nama' => $row['nama'],
+                        'email' => $row['email'],
+                        'passwd' => $row['passwd'],
+                        'avatar' => $row['avatar'],
+                        'id_device' => $row['id_device']
+                    ));
+                };
+
+                if ($result) {
+                    $response = array(
+                        'status' => 1,
+                        'message' => 'Success',
+                        'data' => $result
+                    );
+                } else {
+                    $response = array(
+                        'status' => 0,
+                        'message' => 'No data found'
+                    );
+                }
+                header('Content-Type: application/json');
                 echo json_encode($response);
             }
             
             function update_id_device() {
                 global $connect;
-            
-                $deviceId = $_POST['id_device'] ?: '';
-                $id = $_POST['id'] ?: '';
-            
-                if (!$deviceId->empty && !$id->empty) {
-                    $query = mysqli_query($connect, "UPDATE user SET id_device = '$deviceId' WHERE id = $id");
-                    if ($query) {
-                        $response["status"] = 1;
-                        $response["message"] = "update device id berhasil";
-                    } else {
-                        $response["status"] = 0;
-                        $response["message"] = "gagal update device id";
+
+                $check = array(
+                    'id' => '',
+                    'id_device' => ''
+                );
+
+                $check_match = count(array_intersect_key($_POST, $check));
+                $id = $_POST["id"];
+                $id_device = $_POST["id_device"];
+
+                if($check_match == count($check)) {
+                    $result = mysqli_query($connect, "UPDATE user SET 
+                    id_device = '$id_device'
+                    WHERE id = '$id'");
+                    if($result) {
+                        $response=array(
+                            'status' => 1,
+                            'message' =>'Update user hardware success!'
+                        );
+                    }
+                    else {
+                        $response=array(
+                            'status' => 0,
+                            'message' =>'Update user hardware fail!'
+                        );
                     }
                 }
-            
+                header('Content-Type: application/json');
                 echo json_encode($response);
             }
+        
             
+        
 ?>
